@@ -9,6 +9,9 @@ import android.widget.FrameLayout;
 
 import java.io.IOException;
 
+import cameratool.lsl.com.cameraexample.utils.CameraUtil;
+import cameratool.lsl.com.cameraexample.utils.FileUtils;
+
 public class MainActivity extends AppCompatActivity {
 
     private Camera mCamera;
@@ -18,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPictureTaken(byte[] bytes, Camera camera) {
             try {
-                FileUtils.savePic(bytes, MainActivity.this);
+                FileUtils.savePic(bytes);
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {

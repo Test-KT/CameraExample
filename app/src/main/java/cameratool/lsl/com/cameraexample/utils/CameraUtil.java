@@ -1,11 +1,10 @@
-package cameratool.lsl.com.cameraexample;
+package cameratool.lsl.com.cameraexample.utils;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 
 /**
- *
  * Created by lsl on 2017/10/13.
  */
 
@@ -33,6 +32,7 @@ public class CameraUtil {
 
     /**
      * 获取相机实例
+     *
      * @return
      */
     public static Camera getCamera() {

@@ -4,11 +4,14 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import cameratool.lsl.com.cameraexample.utils.ViewUtil;
 
 /**
  * Description:
@@ -20,8 +23,11 @@ public class CaptureView extends View {
 
     private Paint mPaint;
     private int w, h;
+    private int raduis;
 
-    private Rect mRect;
+    private CircleCapture mCapture;
+    private Point mPoint;
+    private final String TAG = "info----->";
 
 
     public CaptureView(Context context) {
@@ -29,7 +35,7 @@ public class CaptureView extends View {
     }
 
     public CaptureView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs, 0);
+        this(context, attrs, 0);
 
     }
 
@@ -42,8 +48,10 @@ public class CaptureView extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.RED);
-        mPaint.setStrokeWidth(5f);
+        mPaint.setStrokeWidth(1f);
         mPaint.setStyle(Paint.Style.STROKE);
+        mCapture = new CircleCapture();
+
     }
 
 
@@ -52,27 +60,72 @@ public class CaptureView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         this.w = w;
         this.h = h;
+        mPoint = new Point(w / 2, h / 2);
+        raduis = w / 4;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.translate(w / 2, h / 2);
-        Rect rect = new Rect(-150, -150, 150, 150);
-        canvas.drawRect(rect, mPaint);
-        canvas.drawCircle(0, 0, 150, mPaint);
+        mCapture.setCxCy(mPoint.x, mPoint.y, raduis);
+        mCapture.draw(canvas, mPaint);
+
     }
+
+    double defs = 0;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.e(TAG, "触摸点:" + event.getPointerCount());
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                float x = event.getX();
-                float y = event.getY();
+                if (event.getPointerCount() == 2) {
+                    defs = ViewUtil.distanceBetweenFingers(event);
+                    Log.e(TAG, "距离:" + defs);
+                }
                 break;
-        }
-        return super.onTouchEvent(event);
+            case MotionEvent.ACTION_UP:
+                int x = (int) event.getX();
+                int y = (int) event.getY();
+                mPoint = new Point(x, y);
+                invalidate();
+                break;
 
+        }
+        return true;
     }
+
+    /**
+     * 缩小
+     */
+    public void setZoomIn() {
+        if (raduis <= 0) {
+            return;
+        }
+        raduis -= 2;
+        invalidate();
+    }
+
+    /**
+     * 放大
+     */
+    public void setZoomOut() {
+        if (raduis >= w / 2) {
+            return;
+        }
+        raduis += 2;
+        invalidate();
+    }
+
+    public Point getPoint() {
+        return mPoint;
+    }
+
+    public int getR() {
+        return raduis;
+    }
+
+
 }
 
